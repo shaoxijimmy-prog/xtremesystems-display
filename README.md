@@ -1,9 +1,9 @@
 # XtremeSystem Display - GitHub Pages
 
-This repository layout is designed for:
+This repository layout is designed for the display subdomain:
 
 ```txt
-https://xtreme-systems.com/display/
+https://display.xtreme-systems.com/
 ```
 
 ## GitHub Pages setup
@@ -11,27 +11,27 @@ https://xtreme-systems.com/display/
 1. In GitHub, go to `Settings > Pages`.
 2. Source: `Deploy from a branch`.
 3. Branch: `main`, folder: `/root`.
-4. Custom domain: `xtreme-systems.com`.
+4. Custom domain: `display.xtreme-systems.com`.
 
 ## DNS
 
-For an apex domain, GitHub Pages usually needs these A records:
+In Cloudflare, add this DNS record:
 
 ```txt
-185.199.108.153
-185.199.109.153
-185.199.110.153
-185.199.111.153
+Type: CNAME
+Name: display
+Target: shaoxijimmy-prog.github.io
+Proxy status: DNS only
 ```
 
-If you prefer `display.xtreme-systems.com`, use a CNAME record pointing to your GitHub Pages hostname instead, and change the `CNAME` file.
+Keep the existing `lab` record unchanged.
 
 ## Chromecast / Mac mini
 
 Open:
 
 ```txt
-https://xtreme-systems.com/display/
+https://display.xtreme-systems.com/
 ```
 
 Keep the page open full screen. Content can be edited in:
