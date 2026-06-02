@@ -1,0 +1,11 @@
+name = "xtremesystems-instagram-feed"
+main = "instagram-feed-worker.js"
+compatibility_date = "2026-06-02"
+
+[vars]
+IG_GRAPH_VERSION = "v21.0"
+ALLOWED_ORIGIN = "https://display.xtreme-systems.com"
+
+# Add these as Worker secrets, not plain vars:
+# IG_ACCESS_TOKEN
+# IG_USER_ID
