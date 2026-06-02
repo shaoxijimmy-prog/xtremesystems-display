@@ -25,7 +25,54 @@ function pickCorsOrigin(request, env) {
 
 function cleanCaption(caption) {
   if (!caption) return "Latest update from XtremeSystem.";
-  return caption.replace(/\s+/g, " ").trim().slice(0, 140);
+  return decodeEntities(caption).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 140);
+}
+
+function decodeEntities(value) {
+  return value
+    .replace(/<!\[CDATA\[(.*?)\]\]>/gs, "$1")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function matchFirst(value, patterns) {
+  for (const pattern of patterns) {
+    const match = value.match(pattern);
+    if (match?.[1]) return decodeEntities(match[1].trim());
+  }
+  return "";
+}
+
+function parseRssItems(xml, limit) {
+  return [...xml.matchAll(/<item\b[\s\S]*?<\/item>/gi)]
+    .slice(0, limit)
+    .map((match) => {
+      const item = match[0];
+      const title = matchFirst(item, [/<title>([\s\S]*?)<\/title>/i]);
+      const description = matchFirst(item, [/<description>([\s\S]*?)<\/description>/i]);
+      const link = matchFirst(item, [/<link>([\s\S]*?)<\/link>/i]);
+      const pubDate = matchFirst(item, [/<pubDate>([\s\S]*?)<\/pubDate>/i]);
+      const image = matchFirst(item, [
+        /<media:content[^>]+url=["']([^"']+)["']/i,
+        /<media:thumbnail[^>]+url=["']([^"']+)["']/i,
+        /<enclosure[^>]+url=["']([^"']+)["']/i,
+        /<img[^>]+src=["']([^"']+)["']/i,
+      ]);
+
+      if (!image) return null;
+
+      return {
+        image,
+        caption: cleanCaption(description || title),
+        url: link || "https://www.instagram.com/xtremesystemnz/",
+        tag: "Instagram",
+        timestamp: pubDate,
+      };
+    })
+    .filter(Boolean);
 }
 
 function mapMediaItem(item) {
@@ -45,25 +92,51 @@ function mapMediaItem(item) {
 }
 
 function envError(env) {
+  if (env.INSTAGRAM_RSS_URL) return "";
   if (!env.IG_ACCESS_TOKEN) return "Missing IG_ACCESS_TOKEN";
   if (!env.IG_USER_ID) return "Missing IG_USER_ID";
   return "";
 }
 
-async function fetchInstagramPosts(request, env, ctx) {
-  const url = new URL(request.url);
-  const limit = Math.min(
-    Math.max(Number.parseInt(url.searchParams.get("limit") || DEFAULT_LIMIT, 10), 1),
-    MAX_LIMIT
+function responseWithCache(request, env, ctx, cacheKey, body, source) {
+  const finalResponse = new Response(
+    JSON.stringify({
+      posts: body,
+      source,
+      fetchedAt: new Date().toISOString(),
+    }),
+    {
+      status: 200,
+      headers: jsonHeaders(pickCorsOrigin(request, env)),
+    }
   );
-  const cacheUrl = new URL(request.url);
-  cacheUrl.search = `?limit=${limit}`;
-  const cacheKey = new Request(cacheUrl.toString(), request);
-  const cache = caches.default;
-  const cached = await cache.match(cacheKey);
 
-  if (cached) return cached;
+  ctx.waitUntil(caches.default.put(cacheKey, finalResponse.clone()));
+  return finalResponse;
+}
 
+async function fetchRssPosts(request, env, ctx, limit, cacheKey) {
+  const response = await fetch(env.INSTAGRAM_RSS_URL, {
+    headers: { accept: "application/rss+xml, application/xml, text/xml, text/plain" },
+  });
+  const xml = await response.text();
+
+  if (!response.ok) {
+    return new Response(
+      JSON.stringify({
+        posts: [],
+        source: "rss",
+        error: `RSS feed request failed: ${response.status}`,
+      }),
+      { status: 502, headers: jsonHeaders(pickCorsOrigin(request, env)) }
+    );
+  }
+
+  const posts = parseRssItems(xml, limit);
+  return responseWithCache(request, env, ctx, cacheKey, posts, "rss");
+}
+
+async function fetchGraphPosts(request, env, ctx, limit, cacheKey) {
   const version = env.IG_GRAPH_VERSION || DEFAULT_GRAPH_VERSION;
   const fields = [
     "id",
@@ -96,18 +169,28 @@ async function fetchInstagramPosts(request, env, ctx) {
   }
 
   const posts = (data.data || []).map(mapMediaItem).filter(Boolean);
-  const body = JSON.stringify({
-    posts,
-    source: "instagram",
-    fetchedAt: new Date().toISOString(),
-  });
-  const finalResponse = new Response(body, {
-    status: 200,
-    headers: jsonHeaders(pickCorsOrigin(request, env)),
-  });
+  return responseWithCache(request, env, ctx, cacheKey, posts, "instagram");
+}
 
-  ctx.waitUntil(cache.put(cacheKey, finalResponse.clone()));
-  return finalResponse;
+async function fetchInstagramPosts(request, env, ctx) {
+  const url = new URL(request.url);
+  const limit = Math.min(
+    Math.max(Number.parseInt(url.searchParams.get("limit") || DEFAULT_LIMIT, 10), 1),
+    MAX_LIMIT
+  );
+  const cacheUrl = new URL(request.url);
+  cacheUrl.search = `?limit=${limit}`;
+  const cacheKey = new Request(cacheUrl.toString(), request);
+  const cache = caches.default;
+  const cached = await cache.match(cacheKey);
+
+  if (cached) return cached;
+
+  if (env.INSTAGRAM_RSS_URL) {
+    return fetchRssPosts(request, env, ctx, limit, cacheKey);
+  }
+
+  return fetchGraphPosts(request, env, ctx, limit, cacheKey);
 }
 
 export default {
