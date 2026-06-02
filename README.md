@@ -6,6 +6,8 @@ This repository layout is designed for the display subdomain:
 https://display.xtreme-systems.com/
 ```
 
+The custom domain now opens the TV display directly instead of redirecting to `/display/`.
+
 ## GitHub Pages setup
 
 1. In GitHub, go to `Settings > Pages`.
