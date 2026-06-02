@@ -7,7 +7,7 @@ Static TV display page for Chromecast / Mac mini.
 Open:
 
 ```txt
-https://xtreme-systems.com/display/
+https://display.xtreme-systems.com/
 ```
 
 ## How to update content
