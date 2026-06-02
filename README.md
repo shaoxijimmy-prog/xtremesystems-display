@@ -41,3 +41,13 @@ Keep the page open full screen. Content can be edited in:
 ```txt
 display/display-config.js
 ```
+
+## Instagram API
+
+The display is prepared to load Instagram posts from:
+
+```txt
+https://instagram-feed.xtreme-systems.com/instagram-feed?limit=6
+```
+
+Deploy the Cloudflare Worker in `worker/` and add the Instagram token as Worker secrets. Do not put the token in this GitHub Pages site.
