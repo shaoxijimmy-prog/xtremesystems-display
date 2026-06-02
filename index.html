@@ -6,6 +6,130 @@
     <meta name="robots" content="noindex">
     <title>XtremeSystem Store Display</title>
     <link rel="stylesheet" href="./display/styles.css">
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .display-shell {
+        padding: clamp(14px, 1.25vw, 28px);
+        gap: clamp(10px, 0.9vw, 18px);
+      }
+
+      .top-bar {
+        min-height: 72px;
+        padding: 10px 18px;
+      }
+
+      .brand-mark {
+        width: 52px;
+        height: 52px;
+      }
+
+      .brand-lockup strong {
+        font-size: clamp(1.8rem, 2.5vw, 3.3rem);
+      }
+
+      #clock {
+        font-size: clamp(2.1rem, 3.1vw, 3.8rem);
+      }
+
+      .main-grid {
+        grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.72fr);
+        gap: clamp(12px, 1vw, 18px);
+      }
+
+      .instagram-panel {
+        padding: clamp(16px, 1.25vw, 24px);
+        gap: clamp(12px, 1vw, 18px);
+      }
+
+      h1 {
+        font-size: clamp(2.4rem, 4.2vw, 5.2rem);
+      }
+
+      h2 {
+        font-size: clamp(1.35rem, 1.9vw, 2.4rem);
+      }
+
+      .instagram-stage {
+        background:
+          radial-gradient(circle at 24% 24%, rgba(0, 184, 255, 0.34), transparent 34%),
+          linear-gradient(135deg, #07131d, #02080d);
+      }
+
+      .instagram-caption strong {
+        font-size: clamp(1.8rem, 2.7vw, 3.5rem);
+      }
+
+      .inventory-strip {
+        min-height: 116px;
+        gap: 14px;
+      }
+
+      .inventory-strip > div:first-child {
+        min-width: 180px;
+      }
+
+      .inventory-card {
+        min-height: 92px;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .inventory-card img {
+        width: 68px;
+        height: 68px;
+      }
+
+      .promo-panel {
+        gap: clamp(12px, 1vw, 18px);
+      }
+
+      .promo-hero {
+        padding: clamp(18px, 1.35vw, 26px);
+      }
+
+      .promo-stack {
+        grid-template-rows: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        min-height: 0;
+      }
+
+      .promo-card {
+        min-height: 0;
+        padding: clamp(16px, 1.15vw, 22px);
+      }
+
+      .promo-card h3 {
+        margin: 8px 0 6px;
+        font-size: clamp(1.35rem, 1.9vw, 2.35rem);
+      }
+
+      .promo-card p {
+        font-size: clamp(0.92rem, 0.95vw, 1.1rem);
+      }
+
+      .qr-row {
+        min-height: 132px;
+        padding: 12px;
+      }
+
+      .qr-card {
+        width: min(16vw, 220px);
+        min-width: 168px;
+        height: 108px;
+        gap: 10px;
+        padding: 10px;
+      }
+
+      .qr-card img {
+        width: 82px;
+        height: 82px;
+      }
+    </style>
   </head>
   <body>
     <main class="display-shell">
@@ -27,18 +151,18 @@
         <article class="instagram-panel glass-card">
           <div class="section-head">
             <div>
-              <span class="kicker">Live from Instagram</span>
-              <h1>Latest store updates</h1>
+              <span class="kicker">Instagram preview</span>
+              <h1>Instagram latest</h1>
             </div>
             <span class="pill">@xtremesystemnz</span>
           </div>
 
           <div class="instagram-stage" id="instagramStage">
             <a class="instagram-slide is-active" href="https://www.instagram.com/xtremesystemnz/" target="_blank" rel="noreferrer">
-              <img alt="" src="">
+              <img alt="XtremeSystem Instagram preview" src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80">
               <div class="instagram-caption">
-                <span>Loading</span>
-                <strong>Preparing latest posts...</strong>
+                <span>@xtremesystemnz</span>
+                <strong>New arrivals, deals and workshop updates.</strong>
               </div>
             </a>
           </div>
