@@ -3,24 +3,90 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="refresh" content="0; url=./display/">
-    <title>XtremeSystem Display</title>
-    <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        color: #f7fbff;
-        background: #03080d;
-        font-family: "Segoe UI", sans-serif;
-      }
-      a {
-        color: #05b8ff;
-      }
-    </style>
+    <meta name="robots" content="noindex">
+    <title>XtremeSystem Store Display</title>
+    <link rel="stylesheet" href="./display/styles.css">
   </head>
   <body>
-    <p>Opening <a href="./display/">XtremeSystem display</a>...</p>
+    <main class="display-shell">
+      <section class="top-bar" aria-label="Store header">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">X</span>
+          <div>
+            <strong id="storeName">XtremeSystem</strong>
+            <span id="storeTagline">Refurbished and new tech</span>
+          </div>
+        </div>
+        <div class="live-meta">
+          <span id="clock">--:--</span>
+          <span id="dateLabel">Today</span>
+        </div>
+      </section>
+
+      <section class="main-grid">
+        <article class="instagram-panel glass-card">
+          <div class="section-head">
+            <div>
+              <span class="kicker">Live from Instagram</span>
+              <h1>Latest store updates</h1>
+            </div>
+            <span class="pill">@xtremesystemnz</span>
+          </div>
+
+          <div class="instagram-stage" id="instagramStage">
+            <a class="instagram-slide is-active" href="https://www.instagram.com/xtremesystemnz/" target="_blank" rel="noreferrer">
+              <img alt="" src="">
+              <div class="instagram-caption">
+                <span>Loading</span>
+                <strong>Preparing latest posts...</strong>
+              </div>
+            </a>
+          </div>
+
+          <div class="inventory-strip" aria-label="Featured stock">
+            <div>
+              <span class="kicker">Rotating stock</span>
+              <h2>In-store highlights</h2>
+            </div>
+            <div class="inventory-cards" id="inventoryCards"></div>
+          </div>
+        </article>
+
+        <aside class="promo-panel">
+          <div class="promo-hero glass-card">
+            <span class="kicker">Ask our team</span>
+            <h2>Today's best value is usually in-store first.</h2>
+            <p>Scan, browse, or ask staff for the latest specials and trade-in options.</p>
+          </div>
+          <div class="promo-stack" id="promoStack"></div>
+        </aside>
+      </section>
+
+      <section class="qr-row glass-card" aria-label="Scan links">
+        <div class="qr-intro">
+          <span class="kicker">Scan here</span>
+          <h2>Browse, follow, review</h2>
+          <p id="storeDetails">1/88 Cook Street, Auckland CBD | 09-3751410</p>
+        </div>
+        <div class="qr-card">
+          <img id="websiteQr" alt="Website QR code">
+          <strong>Website</strong>
+          <span>Shop latest deals</span>
+        </div>
+        <div class="qr-card">
+          <img id="instagramQr" alt="Instagram QR code">
+          <strong>Instagram</strong>
+          <span>New arrivals</span>
+        </div>
+        <div class="qr-card">
+          <img id="reviewsQr" alt="Google Reviews QR code">
+          <strong>Google Reviews</strong>
+          <span>Find us / review us</span>
+        </div>
+      </section>
+    </main>
+
+    <script src="./display/display-config.js"></script>
+    <script src="./display/script.js"></script>
   </body>
 </html>
