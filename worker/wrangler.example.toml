@@ -5,6 +5,8 @@ compatibility_date = "2026-06-02"
 [vars]
 IG_GRAPH_VERSION = "v21.0"
 ALLOWED_ORIGIN = "https://display.xtreme-systems.com"
+# Easy mode: paste an RSS.app / other Instagram RSS feed URL here.
+# INSTAGRAM_RSS_URL = "https://rss.app/feeds/your-feed-id.xml"
 
 # Add these as Worker secrets, not plain vars:
 # IG_ACCESS_TOKEN
