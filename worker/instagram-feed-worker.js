@@ -2,6 +2,7 @@ const DEFAULT_GRAPH_VERSION = "v21.0";
 const DEFAULT_LIMIT = 6;
 const MAX_LIMIT = 12;
 const CACHE_SECONDS = 900;
+const DEFAULT_INSTAGRAM_RSS_URL = "https://rss.app/feeds/RNQHoP82DfwEaTCJ.xml";
 
 const jsonHeaders = (origin) => ({
   "content-type": "application/json; charset=utf-8",
@@ -92,7 +93,7 @@ function mapMediaItem(item) {
 }
 
 function envError(env) {
-  if (env.INSTAGRAM_RSS_URL) return "";
+  if (env.INSTAGRAM_RSS_URL || DEFAULT_INSTAGRAM_RSS_URL) return "";
   if (!env.IG_ACCESS_TOKEN) return "Missing IG_ACCESS_TOKEN";
   if (!env.IG_USER_ID) return "Missing IG_USER_ID";
   return "";
@@ -116,7 +117,7 @@ function responseWithCache(request, env, ctx, cacheKey, body, source) {
 }
 
 async function fetchRssPosts(request, env, ctx, limit, cacheKey) {
-  const response = await fetch(env.INSTAGRAM_RSS_URL, {
+  const response = await fetch(env.INSTAGRAM_RSS_URL || DEFAULT_INSTAGRAM_RSS_URL, {
     headers: { accept: "application/rss+xml, application/xml, text/xml, text/plain" },
   });
   const xml = await response.text();
@@ -186,7 +187,7 @@ async function fetchInstagramPosts(request, env, ctx) {
 
   if (cached) return cached;
 
-  if (env.INSTAGRAM_RSS_URL) {
+  if (env.INSTAGRAM_RSS_URL || DEFAULT_INSTAGRAM_RSS_URL) {
     return fetchRssPosts(request, env, ctx, limit, cacheKey);
   }
 
