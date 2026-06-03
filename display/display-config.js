@@ -9,7 +9,7 @@ window.XTREME_DISPLAY_CONFIG = {
     googleReviews: "https://www.google.com/maps/search/?api=1&query=Xtremesystem%20NZ%20Ltd%201%2F88%20Cook%20Street%20Auckland",
   },
 
-  instagramFeedJsonUrl: "https://rss.app/feeds/RNQHoP82DfwEaTCJ.xml",
+  instagramFeedJsonUrl: "https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Frss.app%2Ffeeds%2FRNQHoP82DfwEaTCJ.xml",
   shopifyProductsJsonUrl: "https://xtremesystems.co.nz/products.json?limit=24",
 
   promos: [
