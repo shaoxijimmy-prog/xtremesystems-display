@@ -60,7 +60,10 @@
   function parseInstagramFeed(raw, contentType) {
     if (contentType.includes("json") || raw.trim().startsWith("{") || raw.trim().startsWith("[")) {
       const data = JSON.parse(raw);
-      return Array.isArray(data) ? data : data.posts;
+      if (Array.isArray(data)) return data;
+      if (Array.isArray(data.posts)) return data.posts;
+      if (Array.isArray(data.items)) return data.items.map(mapRssJsonItem).filter(Boolean);
+      return [];
     }
 
     const xml = new DOMParser().parseFromString(raw, "application/xml");
@@ -86,6 +89,27 @@
         };
       })
       .filter(Boolean);
+  }
+
+  function mapRssJsonItem(item) {
+    const image =
+      item.image ||
+      item.thumbnail ||
+      item.enclosure?.link ||
+      item.enclosure?.url ||
+      item.content?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
+      item.description?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
+      "";
+
+    if (!image) return null;
+
+    return {
+      image,
+      caption: cleanCaption(item.description || item.title),
+      url: item.link || safe(store.instagram, "https://www.instagram.com/xtremesystemnz/"),
+      tag: "Instagram",
+      timestamp: item.pubDate,
+    };
   }
 
   async function loadInventoryItems() {
