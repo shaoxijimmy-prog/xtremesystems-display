@@ -4,6 +4,16 @@
 
   const safe = (value, fallback = "") => (value === undefined || value === null || value === "" ? fallback : value);
   const qr = (url) => `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=${encodeURIComponent(url)}`;
+  const decodeHtml = (value) =>
+    safe(value)
+      .replace(/<!\[CDATA\[(.*?)\]\]>/gs, "$1")
+      .replace(/&amp;/g, "&")
+      .replace(/&quot;/g, "\"")
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">");
+  const cleanCaption = (value, fallback = "Latest XtremeSystem update") =>
+    decodeHtml(value || fallback).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 140);
 
   function setText(id, text) {
     const element = document.getElementById(id);
@@ -35,8 +45,8 @@
       try {
         const response = await fetch(config.instagramFeedJsonUrl, { cache: "no-store" });
         if (response.ok) {
-          const data = await response.json();
-          const posts = Array.isArray(data) ? data : data.posts;
+          const raw = await response.text();
+          const posts = parseInstagramFeed(raw, response.headers.get("content-type") || "");
           if (Array.isArray(posts) && posts.length) return posts;
         }
       } catch (error) {
@@ -45,6 +55,37 @@
     }
 
     return config.manualInstagramPosts || [];
+  }
+
+  function parseInstagramFeed(raw, contentType) {
+    if (contentType.includes("json") || raw.trim().startsWith("{") || raw.trim().startsWith("[")) {
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data : data.posts;
+    }
+
+    const xml = new DOMParser().parseFromString(raw, "application/xml");
+    return [...xml.querySelectorAll("item")]
+      .slice(0, 8)
+      .map((item) => {
+        const get = (selector) => item.querySelector(selector)?.textContent || "";
+        const image =
+          item.querySelector("media\\:content, content")?.getAttribute("url") ||
+          item.querySelector("media\\:thumbnail, thumbnail")?.getAttribute("url") ||
+          item.querySelector("enclosure")?.getAttribute("url") ||
+          item.querySelector("description")?.textContent?.match(/<img[^>]+src=["']([^"']+)["']/i)?.[1] ||
+          "";
+
+        if (!image) return null;
+
+        return {
+          image,
+          caption: cleanCaption(get("description") || get("title")),
+          url: get("link") || safe(store.instagram, "https://www.instagram.com/xtremesystemnz/"),
+          tag: "Instagram",
+          timestamp: get("pubDate"),
+        };
+      })
+      .filter(Boolean);
   }
 
   async function loadInventoryItems() {
